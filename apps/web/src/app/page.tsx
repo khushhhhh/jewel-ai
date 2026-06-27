@@ -149,7 +149,7 @@ export default function Home() {
       // Step 2: Submit for processing
       const job = await api.processImage({
         asset_id: upload.asset_id,
-        background_preset: selectedPreset,
+        background_preset: 'auto',
         output_aspect_ratios: selectedAspectRatios,
         output_resolution_tier: selectedResolution,
       });
@@ -192,8 +192,7 @@ export default function Home() {
 
   // ── Credit cost preview ─────────────────────────────────────
   const resMultiplier = { standard: 1, hd: 1.5, '4k': 2.5 }[selectedResolution] || 1;
-  const bgMultiplier = { pure_white_ecommerce: 1, marble_luxury: 1.3, velvet_dark: 1.3, outdoor_editorial: 1.5 }[selectedPreset] || 1;
-  const estimatedCredits = Math.ceil(resMultiplier * bgMultiplier * selectedAspectRatios.length);
+  const estimatedCredits = Math.ceil(resMultiplier * 3 * selectedAspectRatios.length); // 3 variants generated automatically
 
   // ── Render ──────────────────────────────────────────────────
   if (isLoading) {
@@ -428,34 +427,7 @@ export default function Home() {
 
               {selectedFile && !isUploading && (
                 <>
-                  {/* Background Preset Selector */}
-                  <div style={{ marginTop: 'var(--space-xl)' }}>
-                    <h3 style={{ marginBottom: 'var(--space-md)' }}>Background Style</h3>
-                    <div className="preset-grid">
-                      {BACKGROUND_PRESETS.map(preset => (
-                        <div
-                          key={preset.id}
-                          className={`preset-card ${selectedPreset === preset.id ? 'selected' : ''}`}
-                          onClick={() => setSelectedPreset(preset.id)}
-                        >
-                          <div style={{ position: 'absolute', inset: 0, background: preset.gradient }} />
-                          <div className="preset-card-overlay">
-                            <div>
-                              <div className="preset-card-label">{preset.name}</div>
-                              <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>
-                                {preset.description}
-                              </div>
-                            </div>
-                          </div>
-                          {selectedPreset === preset.id && (
-                            <div style={{ position: 'absolute', top: '8px', right: '8px', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', color: 'var(--text-inverse)' }}>
-                              ✓
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+
 
                   {/* Aspect Ratio Selector */}
                   <div style={{ marginTop: 'var(--space-xl)' }}>
@@ -660,32 +632,52 @@ export default function Home() {
                     const rawUrl = currentImageItem?.raw_s3_key ? `http://localhost:9000/jewel-raw-uploads/${currentImageItem.raw_s3_key}` : null;
                     return (
                       <>
-                        {activeJobStatus.status === 'COMPLETED' && activeJobStatus.final_cdn_url && (
+                        {activeJobStatus.status === 'COMPLETED' && (
                           <div style={{ marginTop: 'var(--space-lg)', padding: 'var(--space-md)', background: 'rgba(52, 211, 153, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(52, 211, 153, 0.2)' }}>
                             <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--status-completed)', marginBottom: '4px' }}>
                               ✨ Enhancement Complete
                             </div>
                             <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                              CDN URL: <a href={activeJobStatus.final_cdn_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-gold)', textDecoration: 'underline' }}>{activeJobStatus.final_cdn_url}</a>
+                              Your image has been transformed into 3 stunning variants.
                             </div>
                           </div>
                         )}
 
-                        {(rawUrl || activeJobStatus.final_cdn_url) && (
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)', marginTop: 'var(--space-xl)' }}>
+                        {(rawUrl || activeJobStatus.status === 'COMPLETED') && (
+                          <div style={{ marginTop: 'var(--space-xl)' }}>
                             {rawUrl && (
-                              <div>
+                              <div style={{ marginBottom: 'var(--space-xl)' }}>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginBottom: '8px', fontWeight: 600, letterSpacing: '0.05em' }}>ORIGINAL IMAGE</div>
-                                <div style={{ height: '300px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div style={{ height: '200px', maxWidth: '300px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                   <img src={rawUrl} alt="Original raw upload" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                 </div>
                               </div>
                             )}
-                            {activeJobStatus.status === 'COMPLETED' && activeJobStatus.final_cdn_url && (
+
+                            {activeJobStatus.status === 'COMPLETED' && activeJobStatus.variants && (
                               <div>
-                                <div style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', marginBottom: '8px', fontWeight: 600, letterSpacing: '0.05em' }}>ENHANCED BY JEWEL AI</div>
-                                <div style={{ height: '300px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--accent-gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <img src={activeJobStatus.final_cdn_url} alt="Enhanced output" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                <div style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', marginBottom: '16px', fontWeight: 600, letterSpacing: '0.05em' }}>AI GENERATED VARIANTS</div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 'var(--space-lg)' }}>
+                                  {activeJobStatus.variants.map((v, i) => (
+                                    <div key={i} className="card" style={{ padding: '0', overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
+                                      <div style={{ aspectRatio: '1/1', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <img src={v.cdn_url} alt={v.variant_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                      </div>
+                                      <div style={{ padding: 'var(--space-md)' }}>
+                                        <div style={{ fontSize: '0.875rem', fontWeight: 600, textTransform: 'capitalize', marginBottom: '4px' }}>
+                                          {v.variant_name.replace(/_/g, ' ')}
+                                        </div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', lineHeight: 1.4 }}>
+                                          {v.prompt_used}
+                                        </div>
+                                        <div style={{ marginTop: '12px' }}>
+                                          <a href={v.cdn_url} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" style={{ width: '100%', justifyContent: 'center' }}>
+                                            Download
+                                          </a>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             )}

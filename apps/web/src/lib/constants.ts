@@ -48,10 +48,7 @@ export const RESOLUTION_TIERS = [
 export const STATUS_CONFIG: Record<string, { label: string; badgeClass: string; icon: string }> = {
   UPLOADED: { label: 'Uploaded', badgeClass: 'badge-queued', icon: '📤' },
   QUEUED: { label: 'Queued', badgeClass: 'badge-queued', icon: '⏳' },
-  MASKING: { label: 'Masking', badgeClass: 'badge-masking', icon: '🎯' },
-  MASKED: { label: 'Masked', badgeClass: 'badge-masking', icon: '✅' },
-  CLEANING: { label: 'Cleaning', badgeClass: 'badge-cleaning', icon: '🧹' },
-  UPSCALING: { label: 'Upscaling', badgeClass: 'badge-upscaling', icon: '🔍' },
+  ANALYZING: { label: 'Analyzing', badgeClass: 'badge-masking', icon: '🧠' },
   GENERATING_BG: { label: 'Generating', badgeClass: 'badge-generating', icon: '🎨' },
   PROCESSING: { label: 'Processing', badgeClass: 'badge-processing', icon: '⚙️' },
   COMPLETED: { label: 'Completed', badgeClass: 'badge-completed', icon: '✨' },
@@ -59,10 +56,8 @@ export const STATUS_CONFIG: Record<string, { label: string; badgeClass: string; 
 };
 
 export const PIPELINE_STAGES = [
-  { key: 'MASKING', label: 'Masking', icon: '🎯', description: 'SAM2 segmentation' },
-  { key: 'CLEANING', label: 'Cleanup', icon: '🧹', description: 'Defect removal' },
-  { key: 'UPSCALING', label: 'Upscale', icon: '🔍', description: 'Real-ESRGAN' },
-  { key: 'GENERATING_BG', label: 'Background', icon: '🎨', description: 'ControlNet' },
+  { key: 'ANALYZING', label: 'Analysis', icon: '🧠', description: 'Claude Vision' },
+  { key: 'GENERATING_BG', label: 'Background', icon: '🎨', description: 'Gemini Flash' },
 ] as const;
 
 export const ACCEPTED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/heic', 'image/webp'];

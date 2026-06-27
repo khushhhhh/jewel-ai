@@ -209,13 +209,11 @@ async def process_image(
 # GET /api/v1/images/status/{job_id}
 # ═══════════════════════════════════════════════════════════════
 
-STAGE_ORDER = ["MASKING", "CLEANING", "UPSCALING", "GENERATING_BG"]
-STAGE_WEIGHT = {"MASKING": 15, "CLEANING": 25, "UPSCALING": 25, "GENERATING_BG": 35}
+STAGE_ORDER = ["ANALYZING", "GENERATING_BG"]
+STAGE_WEIGHT = {"ANALYZING": 40, "GENERATING_BG": 60}
 
 STAGE_TO_S3_FIELD = {
-    "MASKING": "mask_s3_key",
-    "CLEANING": "cleaned_s3_key",
-    "UPSCALING": "upscaled_s3_key",
+    "ANALYZING": None,
     "GENERATING_BG": "final_s3_key",
 }
 
@@ -264,8 +262,8 @@ async def get_status(
     stages = []
     for stage in STAGE_ORDER:
         stage_idx = STAGE_ORDER.index(stage)
-        s3_field = STAGE_TO_S3_FIELD[stage]
-        s3_url = getattr(asset, s3_field, None)
+        s3_field = STAGE_TO_S3_FIELD.get(stage)
+        s3_url = getattr(asset, s3_field, None) if s3_field else None
         stages.append(
             StageProgress(
                 stage=stage,
@@ -280,6 +278,7 @@ async def get_status(
         progress_pct=progress_pct,
         stages=stages,
         final_cdn_url=asset.cdn_url,
+        variants=asset.variants_json,
         failure_reason=asset.failure_reason,
         failed_step=asset.failed_step,
     )

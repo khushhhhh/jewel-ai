@@ -17,5 +17,6 @@ class StatusResponse(BaseModel):
     progress_pct: int
     stages: list[StageProgress]
     final_cdn_url: str | None = None
+    variants: list[dict] | None = None
     failure_reason: str | None = None
     failed_step: str | None = None

@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     String, Integer, BigInteger, SmallInteger, Text,
-    DateTime, ForeignKey, Index, Enum,
+    DateTime, ForeignKey, Index, Enum, JSON
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,6 +16,7 @@ from app.database import Base
 class ImageStatus(str, enum.Enum):
     """Pipeline state machine states."""
     UPLOADED = "UPLOADED"
+    ANALYZING = "ANALYZING"
     QUEUED = "QUEUED"
     MASKING = "MASKING"
     MASKED = "MASKED"
@@ -67,6 +68,8 @@ class ImageAsset(Base):
     background_preset: Mapped[str | None] = mapped_column(String(50), nullable=True)
     output_aspect_ratio: Mapped[str | None] = mapped_column(String(10), nullable=True)
     output_resolution: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    analysis_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    variants_json: Mapped[list | None] = mapped_column(JSON, nullable=True)
 
     # Orchestration
     inngest_run_id: Mapped[str | None] = mapped_column(String(255), nullable=True)

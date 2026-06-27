@@ -74,6 +74,7 @@ export interface StatusResponse {
   progress_pct: number;
   stages: StageProgress[];
   final_cdn_url: string | null;
+  variants?: { variant_name: string; prompt_used: string; s3_key: string; cdn_url: string }[] | null;
   failure_reason: string | null;
   failed_step: string | null;
 }

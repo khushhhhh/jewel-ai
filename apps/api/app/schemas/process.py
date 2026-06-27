@@ -9,7 +9,7 @@ class ProcessRequest(BaseModel):
     asset_id: UUID
     background_preset: str = Field(
         ...,
-        pattern=r"^(pure_white_ecommerce|marble_luxury|velvet_dark|outdoor_editorial)$",
+        pattern=r"^(pure_white_ecommerce|marble_luxury|velvet_dark|outdoor_editorial|auto)$",
     )
     output_aspect_ratios: list[str] = Field(default=["1:1"], max_length=4)
     output_resolution_tier: str = Field(

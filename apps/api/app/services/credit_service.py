@@ -20,13 +20,7 @@ RESOLUTION_MULTIPLIER = {
     "4k": 2.5,
 }
 
-# Background complexity multiplier — lifestyle scenes are more GPU-intensive
-BACKGROUND_MULTIPLIER = {
-    "pure_white_ecommerce": 1.0,
-    "marble_luxury": 1.3,
-    "velvet_dark": 1.3,
-    "outdoor_editorial": 1.5,
-}
+
 
 
 def calculate_credit_cost(
@@ -43,7 +37,7 @@ def calculate_credit_cost(
     """
     multiplier = (
         RESOLUTION_MULTIPLIER.get(resolution_tier, 1.0)
-        * BACKGROUND_MULTIPLIER.get(background_preset, 1.0)
+        * 3  # Always generates 3 variants via AI now
         * aspect_ratio_count
     )
     return ceil(base_cost * multiplier), multiplier
